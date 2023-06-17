@@ -26,8 +26,22 @@ featureCol = []
 for index in trainDf.keys():
     featureCol.append(tf.feature_column.numeric_column(key=index))
 
+#Building our DNN Classifier
+classifier = tf.estimator.DNNClasifier(
+    feature_columns = featureCol,
+    #Our number of layers and nodes in each
+    hidden_units = [30,10],
+    n_class = 3
+)
 
+classifier.train(
+    input_fn = lambda: input_fn(trainDf, trainY, True),
+    steps=5000
+)
 
+eval = classifier.evaluate(input_fn = lambda: input_fn(evalDf, evalY, False))
+
+print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval))
 
 
 #Define our input function, batch size 256 in this case, shuffling the dataset 1000 times
